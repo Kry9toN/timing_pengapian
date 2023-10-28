@@ -33,192 +33,36 @@ int count = 1;
 unsigned long timeNow = 0;
 unsigned long timeBefore = 0;
 
-
-
-
-void setup()
-{
+void setup() {
   pinMode(relay, OUTPUT);
   pinMode(modeSelect_COM, OUTPUT);
   pinMode(modeSelect_A, INPUT_PULLUP);
   pinMode(modeSelect_B, INPUT_PULLUP);
-  digitalWrite(relay, 0);
-  digitalWrite(modeSelect_COM, 0);
-  for (int i = 0; i < numReadings; i++){
+  digitalWrite(relay, LOW);
+  digitalWrite(modeSelect_COM, LOW);
+  for (int i = 0; i < numReadings; i++) {
     readings[i] = 0;
   }
 }
 
-void loop()
-{
+void loop() {
   total = total - readings[readIndex];
   readings[readIndex] = analogRead(trimpot);
   total = total + readings[readIndex];
-  readIndex = readIndex + 1;
-  if (readIndex >= numReadings){
-    readIndex = 0;
-  }
+  readIndex = (readIndex + 1) % numReadings;
   average = total / numReadings;
   interval = map(average, 0, 1023, 200, 50);
-  
+
   timeNow = millis();
-  if (timeNow - timeBefore >= interval){
+  if (timeNow - timeBefore >= interval) {
     timeBefore = timeNow;
-    count++;
-    if (count > 16){
-      count = 1; 
-    }  
+    count = (count % 16) + 1;
   }
-  
+
   selectorA = digitalRead(modeSelect_A);
   selectorB = digitalRead(modeSelect_B);
-  
-  if (selectorA == 0 && selectorB == 1){
-    if (count == 1){
-      digitalWrite(relay, beat_A[1]);
-    }
-    if (count == 2){
-      digitalWrite(relay, beat_A[2]);
-    }
-    if (count == 3){
-      digitalWrite(relay, beat_A[3]);
-    }
-    if (count == 4){
-      digitalWrite(relay, beat_A[4]);
-    }
-    if (count == 5){
-      digitalWrite(relay, beat_A[5]);
-    }
-    if (count == 6){
-      digitalWrite(relay, beat_A[6]);
-    }
-    if (count == 7){
-      digitalWrite(relay, beat_A[7]);
-    }
-    if (count == 8){
-      digitalWrite(relay, beat_A[8]);
-    }
-    if (count == 9){
-      digitalWrite(relay, beat_A[9]);
-    }
-    if (count == 10){
-      digitalWrite(relay, beat_A[10]);
-    }
-    if (count == 11){
-      digitalWrite(relay, beat_A[11]);
-    }
-    if (count == 12){
-      digitalWrite(relay, beat_A[12]);
-    }
-    if (count == 13){
-      digitalWrite(relay, beat_A[13]);
-    }
-    if (count == 14){
-      digitalWrite(relay, beat_A[14]);
-    }
-    if (count == 15){
-      digitalWrite(relay, beat_A[15]);
-    }
-    if (count == 16){
-      digitalWrite(relay, beat_A[16]);
-    }
-  }else if (selectorA == 1 && selectorB == 1){
-    if (count == 1){
-      digitalWrite(relay, beat_B[1]);
-    }
-    if (count == 2){
-      digitalWrite(relay, beat_B[2]);
-    }
-    if (count == 3){
-      digitalWrite(relay, beat_B[3]);
-    }
-    if (count == 4){
-      digitalWrite(relay, beat_B[4]);
-    }
-    if (count == 5){
-      digitalWrite(relay, beat_B[5]);
-    }
-    if (count == 6){
-      digitalWrite(relay, beat_B[6]);
-    }
-    if (count == 7){
-      digitalWrite(relay, beat_B[7]);
-    }
-    if (count == 8){
-      digitalWrite(relay, beat_B[8]);
-    }
-    if (count == 9){
-      digitalWrite(relay, beat_B[9]);
-    }
-    if (count == 10){
-      digitalWrite(relay, beat_B[10]);
-    }
-    if (count == 11){
-      digitalWrite(relay, beat_B[11]);
-    }
-    if (count == 12){
-      digitalWrite(relay, beat_B[12]);
-    }
-    if (count == 13){
-      digitalWrite(relay, beat_B[13]);
-    }
-    if (count == 14){
-      digitalWrite(relay, beat_B[14]);
-    }
-    if (count == 15){
-      digitalWrite(relay, beat_B[15]);
-    }
-    if (count == 16){
-      digitalWrite(relay, beat_B[16]);
-    }
-  }else{
-    if (count == 1){
-      digitalWrite(relay, beat_C[1]);
-    }
-    if (count == 2){
-      digitalWrite(relay, beat_C[2]);
-    }
-    if (count == 3){
-      digitalWrite(relay, beat_C[3]);
-    }
-    if (count == 4){
-      digitalWrite(relay, beat_C[4]);
-    }
-    if (count == 5){
-      digitalWrite(relay, beat_C[5]);
-    }
-    if (count == 6){
-      digitalWrite(relay, beat_C[6]);
-    }
-    if (count == 7){
-      digitalWrite(relay, beat_C[7]);
-    }
-    if (count == 8){
-      digitalWrite(relay, beat_C[8]);
-    }
-    if (count == 9){
-      digitalWrite(relay, beat_C[9]);
-    }
-    if (count == 10){
-      digitalWrite(relay, beat_C[10]);
-    }
-    if (count == 11){
-      digitalWrite(relay, beat_C[11]);
-    }
-    if (count == 12){
-      digitalWrite(relay, beat_C[12]);
-    }
-    if (count == 13){
-      digitalWrite(relay, beat_C[13]);
-    }
-    if (count == 14){
-      digitalWrite(relay, beat_C[14]);
-    }
-    if (count == 15){
-      digitalWrite(relay, beat_C[15]);
-    }
-    if (count == 16){
-      digitalWrite(relay, beat_C[16]);
-    }
-  }
+
+  int beatIndex = selectorA ? (selectorB ? 1 : 2) : 0;
+
+  digitalWrite(relay, beats[beatIndex][count - 1]);
 }
